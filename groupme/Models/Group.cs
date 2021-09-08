@@ -15,4 +15,9 @@ namespace groupme.Models
     // virtual
     public Profile Creator { get; set; }
   }
+
+  public class GroupMemberViewModel : Group
+  {
+    public int GroupMemberId { get; set; }
+  }
 }

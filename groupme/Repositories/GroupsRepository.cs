@@ -36,8 +36,6 @@ namespace groupme.Repositories
                 FROM groups g
                 JOIN accounts a ON g.creatorId = a.id;
             ";
-
-      // [{g:Group, p: profile}].map(({g,p}) => g.creator = p)
       return _db.Query<Group, Profile, Group>(sql, (g, p) =>
       {
         g.Creator = p;
@@ -63,11 +61,31 @@ namespace groupme.Repositories
         }, new { id }).FirstOrDefault();
     }
 
+    internal List<GroupMemberViewModel> GetByAccountId(string accountId)
+    {
+      string sql = @"
+      SELECT
+        a.*,
+        g.*,
+        gm.id AS groupMemberId
+      FROM groupMembers gm
+      JOIN groups g ON gm.groupId = g.id
+      JOIN accounts a ON g.creatorId = a.id
+      WHERE gm.accountId = @accountId;
+      ";
+      return _db.Query<Profile, GroupMemberViewModel, GroupMemberViewModel>(sql, (prof, gmvm) =>
+      {
+        gmvm.Creator = prof;
+        return gmvm;
+      }, new { accountId }, splitOn: "id").ToList();
+    }
+
+
     public Group Update(Group data)
     {
       var sql = @"
                 UPDATE groups
-                    SET
+                SET
                     name = @Name,
                     img = @Img,
                     description = @Description

@@ -14,10 +14,12 @@ namespace groupme.Controllers
   public class GroupsController : ControllerBase
   {
     private readonly GroupsService _gs;
+    private readonly AccountService _acts;
 
-    public GroupsController(GroupsService gs)
+    public GroupsController(GroupsService gs, AccountService acts)
     {
       _gs = gs;
+      _acts = acts;
     }
 
     [HttpGet]
@@ -40,6 +42,20 @@ namespace groupme.Controllers
       try
       {
         Group group = _gs.GetGroup(id);
+        return Ok(group);
+      }
+      catch (System.Exception e)
+      {
+        return BadRequest(e.Message);
+      }
+    }
+
+    [HttpGet("{id}/members")]
+    public ActionResult<List<GroupMemberProfileViewModel>> GetMembers(int id)
+    {
+      try
+      {
+        List<GroupMemberProfileViewModel> group = _acts.GetGroupMembers(id);
         return Ok(group);
       }
       catch (System.Exception e)
@@ -74,11 +90,12 @@ namespace groupme.Controllers
 
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<ActionResult<Group>> EditGroup([FromBody] Group groupData)
+    public async Task<ActionResult<Group>> EditGroup([FromBody] Group groupData, int id)
     {
       try
       {
         var userInfo = await HttpContext.GetUserInfoAsync<Account>();
+        groupData.Id = id;
         Group g = _gs.EditGroup(groupData, userInfo.Id);
         return Ok(g);
       }

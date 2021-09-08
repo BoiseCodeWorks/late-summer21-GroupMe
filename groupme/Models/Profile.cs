@@ -7,4 +7,10 @@ namespace groupme.Models
     public string Picture { get; set; }
 
   }
+
+  public class GroupMemberProfileViewModel : Profile
+  {
+    public int GroupMemberId { get; set; }
+  }
+
 }

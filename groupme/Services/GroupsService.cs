@@ -48,5 +48,10 @@ namespace groupme.Services
 
       return _groupRepo.Update(group);
     }
+
+    internal List<GroupMemberViewModel> GetGroupsForAccount(string id)
+    {
+      return _groupRepo.GetByAccountId(id);
+    }
   }
 }
